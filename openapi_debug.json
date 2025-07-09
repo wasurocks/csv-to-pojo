@@ -1,0 +1,748 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Generated API",
+    "version": "1.0.0"
+  },
+  "paths": {},
+  "components": {
+    "schemas": {
+      "IsoRequest": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "description": "Transaction amount in THB . Must be greater than 0.",
+            "format": "double"
+          },
+          "endToEndId": {
+            "type": "string",
+            "description": "Unique end-to-end transaction identifier. Must be UUID format.",
+            "maxLength": 36
+          },
+          "categoryPurpose": {
+            "type": "string",
+            "description": "Transaction category purpose code (e.g., ' RFT '). Must be a valid BOT category.",
+            "maxLength": 4
+          },
+          "referenceNo": {
+            "type": "string",
+            "description": "Unique reference number assigned for the transaction. Copy as text Bahtnet Reference Number Mandatory for CMS, ALS(SM), PMH Pattern : BBBBTSSSSS BBBB: Branch No(0700) T : From Application 0 = CMS 7 = ALS-SM(PN) 8 = PMH SSSSS : Sequence No",
+            "maxLength": 10
+          },
+          "messageType": {
+            "type": "string",
+            "description": "Transaction message type. Valid values: '008'",
+            "maxLength": 3
+          },
+          "date": {
+            "type": "string",
+            "description": "Transaction date in YYYY-MM-DD format. Must be a valid date.",
+            "format": "date"
+          },
+          "instructionForCdtrAgent": {
+            "type": "string",
+            "description": "Description (วัตถุประสงค์การโอนเงิน)",
+            "maxLength": 140
+          },
+          "cdtr": {
+            "$ref": "#/components/schemas/IsoRequestCdtr"
+          },
+          "dbtr": {
+            "$ref": "#/components/schemas/IsoRequestDbtr"
+          }
+        },
+        "required": [
+          "amount",
+          "categoryPurpose",
+          "referenceNo",
+          "messageType",
+          "date",
+          "cdtr",
+          "dbtr"
+        ]
+      },
+      "IsoRequestAmount": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestEndToEndId": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCategoryPurpose": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestReferenceNo": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestMessageType": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDate": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestInstructionForCdtrAgent": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCdtr": {
+        "type": "object",
+        "properties": {
+          "account": {
+            "type": "string",
+            "description": "Creditor's account number.",
+            "maxLength": 20
+          },
+          "agent": {
+            "type": "string",
+            "description": "Creditor's BIC code. Must be a valid BIC format.",
+            "maxLength": 11
+          },
+          "nameEn": {
+            "type": "string",
+            "description": "Creditor's name in English.",
+            "maxLength": 140
+          },
+          "nameTh": {
+            "type": "string",
+            "description": "Creditor's name in Thai.",
+            "maxLength": 140
+          },
+          "addressInfo": {
+            "$ref": "#/components/schemas/IsoRequestCdtrAddressInfo"
+          }
+        },
+        "required": [
+          "account",
+          "agent",
+          "nameEn",
+          "nameTh"
+        ]
+      },
+      "IsoRequestCdtrAccount": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCdtrAgent": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCdtrNameEn": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCdtrNameTh": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCdtrAddressInfo": {
+        "type": "object",
+        "properties": {
+          "addressDepartment": {
+            "type": "string",
+            "description": "Department name in the address.",
+            "maxLength": 50
+          },
+          "addressSubDepartment": {
+            "type": "string",
+            "description": "Sub-department name in the address.",
+            "maxLength": 50
+          },
+          "addressStreet": {
+            "type": "string",
+            "description": "Street address of the creditor.",
+            "maxLength": 100
+          },
+          "addressBuildingNo": {
+            "type": "string",
+            "description": "Building number of the creditor's address.",
+            "maxLength": 10
+          },
+          "addressBuildingName": {
+            "type": "string",
+            "description": "Building name of the creditor's address.",
+            "maxLength": 100
+          },
+          "addressFloor": {
+            "type": "string",
+            "description": "Floor number of the creditor's address.",
+            "maxLength": 5
+          },
+          "addressPostBox": {
+            "type": "string",
+            "description": "Post box address of the creditor.",
+            "maxLength": 10
+          },
+          "addressRoom": {
+            "type": "string",
+            "description": "Room number of the creditor's address.",
+            "maxLength": 10
+          },
+          "addressPostCode": {
+            "type": "string",
+            "description": "Creditor's postal code.",
+            "maxLength": 5
+          },
+          "addressTownName": {
+            "type": "string",
+            "description": "Town name of the creditor's address.",
+            "maxLength": 50
+          },
+          "addressDistrictName": {
+            "type": "string",
+            "description": "District name of the creditor's address.",
+            "maxLength": 50
+          },
+          "addressCountry": {
+            "type": "string",
+            "description": "Creditor's country code (ISO).",
+            "maxLength": 2
+          },
+          "addressLine1": {
+            "type": "string",
+            "description": "First address line of the creditor.",
+            "maxLength": 140
+          },
+          "addressLine2": {
+            "type": "string",
+            "description": "Second address line of the creditor.",
+            "maxLength": 140
+          }
+        }
+      },
+      "IsoRequestCdtrAddressInfoAddressDepartment": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCdtrAddressInfoAddressSubDepartment": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCdtrAddressInfoAddressStreet": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCdtrAddressInfoAddressBuildingNo": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCdtrAddressInfoAddressBuildingName": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCdtrAddressInfoAddressFloor": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCdtrAddressInfoAddressPostBox": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCdtrAddressInfoAddressRoom": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCdtrAddressInfoAddressPostCode": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCdtrAddressInfoAddressTownName": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCdtrAddressInfoAddressDistrictName": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCdtrAddressInfoAddressCountry": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCdtrAddressInfoAddressLine1": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestCdtrAddressInfoAddressLine2": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtr": {
+        "type": "object",
+        "properties": {
+          "account": {
+            "type": "string",
+            "description": "Debtor's account number.",
+            "maxLength": 20
+          },
+          "nameEn": {
+            "type": "string",
+            "description": "Debtor's name in English.",
+            "maxLength": 140
+          },
+          "nameTh": {
+            "type": "string",
+            "description": "Debtor's name in Thai.",
+            "maxLength": 140
+          },
+          "dbtrCardType": {
+            "type": "string",
+            "description": "Type of the debtor's identification card.",
+            "maxLength": 10
+          },
+          "dbtrCardNo": {
+            "type": "string",
+            "description": "Debtor's identification card number.",
+            "maxLength": 35
+          },
+          "dbtrDateOfBirth": {
+            "type": "string",
+            "description": "Debtor's date of birth.",
+            "format": "date"
+          },
+          "dbtrBirthPlace": {
+            "type": "string",
+            "description": "Debtor's place of birth.",
+            "maxLength": 100
+          },
+          "dbtrBirthCountry": {
+            "type": "string",
+            "description": "Debtor's birth country in ISO format.",
+            "maxLength": 2
+          },
+          "addressInfo": {
+            "$ref": "#/components/schemas/IsoRequestDbtrAddressInfo"
+          }
+        },
+        "required": [
+          "account",
+          "nameEn"
+        ]
+      },
+      "IsoRequestDbtrAccount": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrNameEn": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrNameTh": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrDbtrCardType": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrDbtrCardNo": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrDbtrDateOfBirth": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrDbtrBirthPlace": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrDbtrBirthCountry": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrAddressInfo": {
+        "type": "object",
+        "properties": {
+          "addressDepartment": {
+            "type": "string",
+            "description": "Department name in the address.",
+            "maxLength": 50
+          },
+          "addressSubDepartment": {
+            "type": "string",
+            "description": "Sub-department name in the address.",
+            "maxLength": 50
+          },
+          "addressStreet": {
+            "type": "string",
+            "description": "Street address of the debtor.",
+            "maxLength": 100
+          },
+          "addressBuildingNo": {
+            "type": "string",
+            "description": "Building number of the debtor's address.",
+            "maxLength": 10
+          },
+          "addressBuildingName": {
+            "type": "string",
+            "description": "Building name of the debtor's address.",
+            "maxLength": 100
+          },
+          "addressFloor": {
+            "type": "string",
+            "description": "Floor number of the debtor's address.",
+            "maxLength": 5
+          },
+          "addressPostBox": {
+            "type": "string",
+            "description": "Post box address of the debtor.",
+            "maxLength": 10
+          },
+          "addressRoom": {
+            "type": "string",
+            "description": "Room number of the debtor's address.",
+            "maxLength": 10
+          },
+          "addressPostCode": {
+            "type": "string",
+            "description": "Debtor's postal code.",
+            "maxLength": 5
+          },
+          "addressTownName": {
+            "type": "string",
+            "description": "Town name of the debtor's address.",
+            "maxLength": 50
+          },
+          "addressDistrictName": {
+            "type": "string",
+            "description": "District name of the debtor's address.",
+            "maxLength": 50
+          },
+          "addressCountry": {
+            "type": "string",
+            "description": "Debtor's country code (ISO).",
+            "maxLength": 2
+          },
+          "addressLine1": {
+            "type": "string",
+            "description": "First address line of the debtor.",
+            "maxLength": 140
+          },
+          "addressLine2": {
+            "type": "string",
+            "description": "Second address line of the debtor.",
+            "maxLength": 140
+          }
+        }
+      },
+      "IsoRequestDbtrAddressInfoAddressDepartment": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrAddressInfoAddressSubDepartment": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrAddressInfoAddressStreet": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrAddressInfoAddressBuildingNo": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrAddressInfoAddressBuildingName": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrAddressInfoAddressFloor": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrAddressInfoAddressPostBox": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrAddressInfoAddressRoom": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrAddressInfoAddressPostCode": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrAddressInfoAddressTownName": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrAddressInfoAddressDistrictName": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrAddressInfoAddressCountry": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrAddressInfoAddressLine1": {
+        "type": "object",
+        "properties": {}
+      },
+      "IsoRequestDbtrAddressInfoAddressLine2": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfo": {
+        "type": "object",
+        "properties": {
+          "systemChannel": {
+            "type": "string",
+            "description": "System channel for the transaction.",
+            "maxLength": 3
+          },
+          "originateChannel": {
+            "type": "string",
+            "description": "Channel from which the transaction originated.",
+            "maxLength": 3
+          },
+          "rquid": {
+            "type": "string",
+            "description": "Unique identification to identify the transaction. Format : <ChannelCode> (3) + <subId/subfunction> (3)> < YYMMDD (6)> + <running (11)> + <random (2)>",
+            "maxLength": 25
+          },
+          "branchNo": {
+            "type": "string",
+            "description": "Branch number where the transaction originated.",
+            "maxLength": 10
+          },
+          "employeeId": {
+            "type": "string",
+            "description": "ID of the employee processing the transaction.",
+            "maxLength": 15
+          },
+          "unit": {
+            "type": "string",
+            "description": "Unit หน่วยงานเจ้าของรายการ Mandatory when employeeId = NULL",
+            "maxLength": 10
+          },
+          "tellerNo": {
+            "type": "string",
+            "description": "Teller number processing the transaction.",
+            "maxLength": 10
+          },
+          "authTellerNo": {
+            "type": "string",
+            "description": "Authorized teller number.",
+            "maxLength": 10
+          },
+          "originateRef": {
+            "type": "string",
+            "description": "Original reference number generated by originate_channel.",
+            "maxLength": 100
+          },
+          "fundSof": {
+            "type": "string",
+            "description": "Source of funds for the transaction.",
+            "maxLength": 5
+          },
+          "sofRef": {
+            "type": "string",
+            "description": "Reference for source of funds. (for fundSof = 4,5)",
+            "maxLength": 50
+          },
+          "cdtrAgentBranch": {
+            "type": "string",
+            "description": "Creditor agent branch.",
+            "maxLength": 35
+          },
+          "dbtrCustType": {
+            "type": "string",
+            "description": "Customer type of the debtor (p = Person, c = Corporate).",
+            "maxLength": 1
+          },
+          "dbtrTelNo": {
+            "type": "string",
+            "description": "Debtor telephone number.",
+            "maxLength": 15
+          },
+          "cardIssuerCountry": {
+            "type": "string",
+            "description": "Issuer's country code.",
+            "maxLength": 3
+          },
+          "feeInfo": {
+            "$ref": "#/components/schemas/SupplementInfoFeeInfo"
+          }
+        },
+        "required": [
+          "systemChannel",
+          "originateChannel",
+          "branchNo",
+          "fundSof",
+          "feeInfo"
+        ]
+      },
+      "SupplementInfoSystemChannel": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoOriginateChannel": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoRquid": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoBranchNo": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoEmployeeId": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoUnit": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoTellerNo": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoAuthTellerNo": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoOriginateRef": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoFundSof": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoSofRef": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoCdtrAgentBranch": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoDbtrCustType": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoDbtrTelNo": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoCardIssuerCountry": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoFeeInfo": {
+        "type": "object",
+        "properties": {
+          "manageFeeByKBN": {
+            "type": "string",
+            "description": "Manage fee by KBN flag Y = Manage fee by KBN , N = Manage fee by channel",
+            "maxLength": 1
+          },
+          "cdtrRegionArea": {
+            "type": "string",
+            "description": "Region area code for creditor.",
+            "maxLength": 1
+          },
+          "autoFeeFlag": {
+            "type": "string",
+            "description": "Flag for automatic fee calculation.",
+            "maxLength": 1
+          },
+          "totalFee": {
+            "type": "number",
+            "description": "Total fee applicable for the transaction.",
+            "format": "double"
+          },
+          "leaseLine": {
+            "type": "number",
+            "description": "Lease line fee applicable if fund_sof = 3.",
+            "format": "double"
+          },
+          "depositInterRegionFee": {
+            "type": "number",
+            "description": "Inter-region deposit fee applicable if fund_sof = 3.",
+            "format": "double"
+          },
+          "bahtnetFee": {
+            "type": "number",
+            "description": "Bahtnet transaction fee.",
+            "format": "double"
+          },
+          "bahtnetInterRegionFee": {
+            "type": "number",
+            "description": "Inter-region Bahtnet fee applicable if auto_fee_flag = 2.",
+            "format": "double"
+          },
+          "feeSof": {
+            "type": "string",
+            "description": "Method of fee collection (1 = cash, 2 = transfer, 3 = deduction).",
+            "maxLength": 1
+          },
+          "taxNo": {
+            "type": "string",
+            "description": "Tax Number 13 digits (Mandatory when Flag Refund Tax = Y)",
+            "maxLength": 13
+          },
+          "refundTaxFlag": {
+            "type": "string",
+            "description": "Flag Refund Tax (Flag คืนภาษี) Y = คืนภาษี, N = ไม่คืนภาษี",
+            "maxLength": 1
+          }
+        },
+        "required": [
+          "manageFeeByKBN"
+        ]
+      },
+      "SupplementInfoFeeInfoManageFeeByKBN": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoFeeInfoCdtrRegionArea": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoFeeInfoAutoFeeFlag": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoFeeInfoTotalFee": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoFeeInfoLeaseLine": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoFeeInfoDepositInterRegionFee": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoFeeInfoBahtnetFee": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoFeeInfoBahtnetInterRegionFee": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoFeeInfoFeeSof": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoFeeInfoTaxNo": {
+        "type": "object",
+        "properties": {}
+      },
+      "SupplementInfoFeeInfoRefundTaxFlag": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  }
+}

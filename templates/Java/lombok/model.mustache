@@ -1,0 +1,19 @@
+{{#models}}
+{{#model}}
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Schema(name = "{{classname}}", description = "{{description}}")
+public class {{classname}} {
+{{#vars}}
+    @Schema(description = "{{{description}}}"{{#required}}, required = true{{/required}})
+    @JsonProperty("{{baseName}}")
+    private {{datatype}} {{name}};
+    
+{{/vars}}
+}
+{{/model}}
+{{/models}}
