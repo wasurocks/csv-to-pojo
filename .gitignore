@@ -1,1 +1,36 @@
-output
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+env/
+venv/
+.conda/
+
+# Output and build directories
+output/
+build/
+dist/
+*.egg-info/
+
+# OpenAPI Generator temp and debug files
+openapi_debug.json
+*.tmp
+*.bak
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
