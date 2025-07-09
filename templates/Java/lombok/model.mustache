@@ -61,8 +61,8 @@ public class {{classname}} {
     @NotNull(message = "must not be null")
     {{/required}}
     {{/isModel}}
-    private {{datatype}} {{name}};
-
+    private {{#isNumeric}}BigDecimal{{/isNumeric}}{{^isNumeric}}{{datatype}}{{/isNumeric}} {{name}};
+    
 {{/vars}}
 }
 {{/model}}
