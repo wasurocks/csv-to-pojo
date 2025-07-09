@@ -1,0 +1,44 @@
+﻿Field name,Type,M/O/C,Description,Mapping
+paymentRequest,Object,M,,
+paymentRequest.amount,Number,M,Transaction amount in local currency. Must be greater than 0.,Forward from request
+paymentRequest.transactionId,String (36),O,Unique transaction identifier. Must be UUID format.,Forward from request
+paymentRequest.categoryCode,String (4),M,"Transaction category purpose code (e.g., ' TRF '). Must be a valid category code.",Forward from request
+paymentRequest.referenceNumber,String (10),M,"Unique reference number assigned for the transaction. Format: BRNCTSSSSS BRNC: Branch Code (e.g., 1234), T: Application Code, SSSSS: Sequence Number","Set value as ""1234X"" + 5-digit sequence number generated from transaction_seq."
+paymentRequest.messageType,String (3),M,Transaction message type. Valid values: '001',"get value from config.yaml, current value is ""001"""
+paymentRequest.transactionDate,Date,M,Transaction date in YYYY-MM-DD format. Must be a valid date.,Forward from request
+paymentRequest.notes,String (140),O,Payment notes or purpose description,Forward from request
+paymentRequest.creditor,Object,M,,
+paymentRequest.creditor.account,String (20),M,Creditor's account number.,Forward from request
+paymentRequest.creditor.agentCode,String (11),M,Creditor's agent code (BIC format).,Forward from request
+paymentRequest.creditor.name,String (140),M,Creditor's full name.,Forward from request
+paymentRequest.creditor.address,Object,O,,
+paymentRequest.creditor.address.department,String (50),O,Department name.,Forward from request
+paymentRequest.creditor.address.street,String (100),O,Street address.,Forward from request
+paymentRequest.creditor.address.building,String (100),O,Building name or number.,Forward from request
+paymentRequest.creditor.address.postalCode,String (5),O,Postal code.,Forward from request
+paymentRequest.creditor.address.city,String (50),O,City name.,Forward from request
+paymentRequest.creditor.address.country,String (2),O,Country code (ISO).,Forward from request
+paymentRequest.debtor,Object,M,,
+paymentRequest.debtor.account,String (20),M,Debtor's account number.,Forward from request
+paymentRequest.debtor.name,String (140),M,Debtor's full name.,Forward from request
+paymentRequest.debtor.identificationType,String (10),O,Type of debtor identification document.,Forward from request
+paymentRequest.debtor.identificationNumber,String (35),O,Identification document number.,Forward from request
+paymentRequest.debtor.birthDate,Date,O,Debtor's birth date.,Forward from request
+paymentRequest.debtor.birthCountry,String (2),O,Country code of debtor's birthplace (ISO).,Forward from request
+supplement,Object,O,,
+supplement.channel,String (3),M,System channel code for the transaction.,"get value from config.yaml, current value is ""xyz"""
+supplement.originChannel,String (3),M,Originating channel code.,Forward from request
+supplement.requestId,String (25),O,Unique identifier format: <ChannelCode><Date><Sequence><RandomDigits>,Forward from request
+supplement.branchCode,String (10),M,Branch code where the transaction originated.,Forward from request
+supplement.staffId,String (15),O,Staff ID handling the transaction.,Forward from request
+supplement.unitCode,String (10),O,Unit responsible for the transaction. Mandatory if staffId is null.,Forward from request
+supplement.sourceOfFunds,String (5),M,Source of funds code.,Forward from request
+supplement.sourceReference,String (50),C,"Source of funds reference, if applicable.",Forward from request
+supplement.debtorContact,String (15),O,Debtor contact phone number.,Forward from request
+supplement.feeDetails,Object,O,,
+supplement.feeDetails.autoManageFee,String (1),M,"Auto fee management flag. Y/N",Forward from request
+supplement.feeDetails.totalFee,Number,O,Total applicable fees for the transaction.,Forward from request
+supplement.feeDetails.transactionFee,Number,O,Transaction processing fee.,Forward from request
+supplement.feeDetails.feeMethod,String (1),O,"Fee collection method: 1=cash, 2=transfer, 3=deduct.",Forward from request
+supplement.feeDetails.taxNumber,String (13),O,Tax ID number (mandatory if refund applicable).,Forward from request
+supplement.feeDetails.taxRefund,String (1),O,"Tax refund flag: Y=Yes, N=No",Forward from request
