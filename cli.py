@@ -16,7 +16,7 @@ def generate(
     ),
     version: str = typer.Option("1.0.0", "--version", "-v", help="API version."),
     model_package: str = typer.Option(
-        "com.example.model", "--model-package", "-m", help="Java model package name."
+        "com.example.model", "--package", "-p", help="Java model package name."
     ),
 ):
     """

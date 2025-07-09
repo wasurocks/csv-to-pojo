@@ -29,7 +29,9 @@ def run_openapi_codegen(
         "useBeanValidation=true",
     ]
     if model_package:
-        additional_properties.append(f"modelPackage={model_package}")
+        additional_properties.append(
+            f"modelPackage={model_package},packageName={model_package}"
+        )
 
     args = [
         "generate",
