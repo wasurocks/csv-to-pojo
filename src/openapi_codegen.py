@@ -48,6 +48,7 @@ def run_openapi_codegen(
         "--global-property=modelDocs=false",
         "--global-property=modelTests=false",
         "--global-property=debugModels=true",
+        "--type-mappings=number=BigDecimal,boolean=Boolean,date=String,date-time=String",
     ]
 
     print("Running OpenAPI Generator with arguments:", args)

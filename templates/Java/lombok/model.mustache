@@ -25,7 +25,7 @@ import java.util.List;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Schema(name = "{{classname}}", description = "{{description}}")
+@Schema(name = "{{classname}}")
 public class {{classname}} {
 
 {{#vars}}
@@ -62,7 +62,7 @@ public class {{classname}} {
     {{/required}}
     {{/isModel}}
     private {{#isNumeric}}BigDecimal{{/isNumeric}}{{^isNumeric}}{{datatype}}{{/isNumeric}} {{name}};
-    
+    {{space}}
 {{/vars}}
 }
 {{/model}}
