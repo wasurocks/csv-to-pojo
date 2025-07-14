@@ -24,6 +24,7 @@ def build_openapi_from_csv_dynamic(
         type_str = row.get("Type", "").strip()
         requiredness = row.get("M/O/C", "").strip()
         description = html.unescape(row.get("Description", "").strip())
+        example = row.get("Example", "").strip()
 
         if not path or path.lower() in {"header", "body"}:
             continue
@@ -54,6 +55,11 @@ def build_openapi_from_csv_dynamic(
         prop_schema = {"type": openapi_type}
         if description:
             prop_schema["description"] = description
+        if example:
+            try:
+                prop_schema["example"] = json.loads(example)
+            except json.JSONDecodeError:
+                prop_schema["example"] = example
         if fmt:
             prop_schema["format"] = fmt
         if max_length and openapi_type == "string":
