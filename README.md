@@ -2,6 +2,8 @@
 
 🔄 **Client-side CSV to Java POJO generator** - Convert CSV specifications into Java POJOs with validation annotations, all processed in your browser!
 
+**🌐 [Live Demo](https://username.github.io/csv-to-pojo-1/)** *(Update with your GitHub username after deployment)*
+
 ## 🚀 Features
 
 - **Client-side Processing**: All CSV parsing and code generation happens in the browser - no server required
@@ -24,6 +26,20 @@ npm run dev
 docker-compose up -d
 # Access at http://localhost:3000
 ```
+
+### GitHub Pages Deployment
+
+1. **Fork/Clone** this repository to your GitHub account
+2. **Enable GitHub Pages** in repository settings:
+   - Go to Settings → Pages
+   - Source: GitHub Actions
+3. **Push to main branch** - deployment happens automatically
+4. **Update the live demo URL** in this README with your GitHub username
+
+The GitHub Action will automatically:
+- Run tests
+- Build the application  
+- Deploy to GitHub Pages
 
 ## 📝 Usage
 
