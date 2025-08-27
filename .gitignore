@@ -1,29 +1,19 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*.pyo
+# Node modules
+node_modules/
 
-# Virtual environments
-.venv/
-env/
-venv/
-.conda/
-
-# Output and build directories
-output/
-build/
+# Build output
 dist/
-*.egg-info/
+build/
+output/
 
-# OpenAPI Generator temp and debug files
-openapi_debug.json
-*.tmp
-*.bak
+# TypeScript
+*.tsbuildinfo
 
-# IDE/editor files
+# IDE files
 .vscode/
 .idea/
 *.swp
+*.swo
 
 # OS files
 .DS_Store
@@ -31,6 +21,34 @@ Thumbs.db
 
 # Logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints/
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Coverage
+coverage/
+*.lcov
+
+# Docker
+.dockerignore
+
+# Debug files
+openapi_debug.json
+
+# Python artifacts (legacy - keeping for reference)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+.cache/
