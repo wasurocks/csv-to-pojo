@@ -441,9 +441,6 @@ class CSVToPojoApp {
         <button onclick="app.downloadAllFiles()" style="padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
           📦 Download All as ZIP
         </button>
-        <button onclick="app.copyAllToClipboard()" style="padding: 8px 16px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
-          📋 Copy All to Clipboard
-        </button>
       </div>
       ${filesHtml}
     `;
@@ -503,28 +500,15 @@ class CSVToPojoApp {
     }
 
     public async downloadAllFiles(): Promise<void> {
-        // For simplicity, we'll create a simple archive format
-        // In a real implementation, you might want to use a proper ZIP library
-        const archive = Array.from(this.state.generatedFiles.entries())
-            .map(([filename, content]) => `=== ${filename} ===\n${content}\n\n`)
-            .join("");
-
-        const blob = new Blob([archive], { type: "text/plain;charset=utf-8" });
-        saveAs(blob, "java-pojos.txt");
-    }
-
-    public async copyAllToClipboard(): Promise<void> {
-        const allContent = Array.from(this.state.generatedFiles.values()).join(
-            "\n\n"
-        );
-
-        try {
-            await navigator.clipboard.writeText(allContent);
-            this.showStatus("✅ Copied all files to clipboard!", "success");
-        } catch (err) {
-            console.error("Failed to copy to clipboard:", err);
-            this.showStatus("❌ Failed to copy to clipboard", "error");
+        // @ts-ignore Dynamic import of external JSZip library
+        const JSZip = (await import(/* webpackIgnore: true */ "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"))
+            .default as any;
+        const zip = new JSZip();
+        for (const [filename, content] of this.state.generatedFiles.entries()) {
+            zip.file(filename, content);
         }
+        const blob = await zip.generateAsync({ type: "blob" });
+        saveAs(blob, "java-pojos.zip");
     }
 }
 
