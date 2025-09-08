@@ -11,6 +11,8 @@ export interface JavaProperty {
   isNumeric: boolean;
   isDate: boolean;
   isModel: boolean;
+  isList: boolean;
+  listElementType?: string;
   maxLength?: number;
   example?: string;
   pattern?: string;
@@ -28,6 +30,10 @@ export interface GenerationContext {
 }
 
 function convertOpenAPITypeToJava(type: string, format?: string): string {
+  if (type === 'integer') {
+    return 'Integer';
+  }
+  
   if (type === 'number') {
     return 'BigDecimal';
   }
@@ -41,6 +47,10 @@ function convertOpenAPITypeToJava(type: string, format?: string): string {
   
   if (type === 'boolean') {
     return 'Boolean';
+  }
+  
+  if (type === 'object') {
+    return 'Object';
   }
   
   return 'String';
@@ -78,7 +88,39 @@ function convertSchemaToJavaModel(
         isNumeric: false,
         isDate: false,
         isModel: true,
+        isList: false,
         description: propSchema.description,
+        example: propSchema.example,
+      });
+    } else if (propSchema.type === 'array') {
+      // This is an array property
+      const itemsSchema = propSchema.items;
+      let elementType = 'String';
+      let isElementModel = false;
+      
+      if (itemsSchema.$ref) {
+        // Array of objects (references)
+        elementType = itemsSchema.$ref.split('/').pop() || 'Object';
+        isElementModel = true;
+      } else {
+        // Array of primitives
+        elementType = convertOpenAPITypeToJava(itemsSchema.type, itemsSchema.format);
+      }
+      
+      vars.push({
+        name: propName,
+        baseName: propName,
+        datatype: `List<${elementType}>`,
+        required: schema.required?.includes(propName) || false,
+        isString: false,
+        isNumeric: false,
+        isDate: false,
+        isModel: isElementModel,
+        isList: true,
+        listElementType: elementType,
+        description: propSchema.description,
+        maxLength: itemsSchema.maxLength,
+        example: propSchema.example,
       });
     } else {
       // This is a primitive property
@@ -92,8 +134,10 @@ function convertSchemaToJavaModel(
         isNumeric: isOpenAPITypeNumeric(propSchema.type),
         isDate: isOpenAPITypeDate(propSchema.type, propSchema.format),
         isModel: false,
+        isList: false,
         description: propSchema.description,
         maxLength: propSchema.maxLength,
+        example: propSchema.example,
       });
     }
   }
@@ -179,32 +223,46 @@ public class {{classname}} {
     )
     @JsonProperty("{{baseName}}")
     {{#required}}
-        {{#isNumeric}}
+        {{#isList}}
+    @NotNull(message = "must not be null")
+    @NotEmpty(message = "must not be empty")
+        {{/isList}}
+        {{^isList}}
+            {{#isNumeric}}
     @NotNull(message = "must not be null")
     @Positive(message = "must be greater than 0")
-        {{/isNumeric}}
-        {{#isString}}
+            {{/isNumeric}}
+            {{#isString}}
     @NotBlank(message = "must not be null or empty")
-        {{/isString}}
-    {{/required}}
-    {{#isString}}
-        {{#maxLength}}
-    @Size(max = {{maxLength}}, message = "length must not exceed {{maxLength}} characters")
-        {{/maxLength}}
-        {{#pattern}}
-    @Pattern(regexp = "{{pattern}}", message = "{{patternMessage}}")
-        {{/pattern}}
-    {{/isString}}
-    {{#isDate}}
-    @Pattern(regexp = "^\\\\d{4}-\\\\d{2}-\\\\d{2}$", message = "Date must be in the format yyyy-MM-dd")
-    {{/isDate}}
-    {{#isModel}}
-    @Valid
-    {{#required}}
+            {{/isString}}
+            {{#isModel}}
     @NotNull(message = "must not be null")
+            {{/isModel}}
+        {{/isList}}
     {{/required}}
-    {{/isModel}}
-    private {{#isNumeric}}BigDecimal{{/isNumeric}}{{^isNumeric}}{{datatype}}{{/isNumeric}} {{name}};
+    {{#isList}}
+    @Valid
+        {{#maxLength}}
+    @Size(max = {{maxLength}}, message = "each element length must not exceed {{maxLength}} characters")
+        {{/maxLength}}
+    {{/isList}}
+    {{^isList}}
+        {{#isString}}
+            {{#maxLength}}
+    @Size(max = {{maxLength}}, message = "length must not exceed {{maxLength}} characters")
+            {{/maxLength}}
+            {{#pattern}}
+    @Pattern(regexp = "{{pattern}}", message = "{{patternMessage}}")
+            {{/pattern}}
+        {{/isString}}
+        {{#isDate}}
+    @Pattern(regexp = "^\\\\d{4}-\\\\d{2}-\\\\d{2}$", message = "Date must be in the format yyyy-MM-dd")
+        {{/isDate}}
+        {{#isModel}}
+    @Valid
+        {{/isModel}}
+    {{/isList}}
+    private {{#isList}}{{{datatype}}}{{/isList}}{{^isList}}{{#isNumeric}}BigDecimal{{/isNumeric}}{{^isNumeric}}{{{datatype}}}{{/isNumeric}}{{/isList}} {{name}};
 
 {{/vars}}
 }

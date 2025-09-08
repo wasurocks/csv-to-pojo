@@ -1,42 +1,65 @@
-version: '3.8'
-
 services:
-  csv-to-pojo-web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "3000:80"
-    environment:
-      - NODE_ENV=production
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.csv-to-pojo.rule=Host(`csv-to-pojo.localhost`)"
-      - "traefik.http.services.csv-to-pojo.loadbalancer.server.port=80"
+    csv-to-pojo-web:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: production
+        container_name: csv-to-pojo-web
+        ports:
+            - "3000:80"
+        environment:
+            - NODE_ENV=production
+        restart: unless-stopped
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "wget",
+                    "--no-verbose",
+                    "--tries=1",
+                    "--spider",
+                    "http://localhost/",
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 10s
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.csv-to-pojo.rule=Host(`csv-to-pojo.localhost`)"
+            - "traefik.http.services.csv-to-pojo.loadbalancer.server.port=80"
+            - "com.docker.compose.service=csv-to-pojo-web"
+        profiles:
+            - prod
 
-  # Optional: Development service
-  csv-to-pojo-dev:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    ports:
-      - "3001:3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
-    command: npm run dev
-    profiles:
-      - dev
-
-networks:
-  default:
-    name: csv-to-pojo-network
+    csv-to-pojo-dev:
+        build:
+            context: .
+            dockerfile: Dockerfile.dev
+        container_name: csv-to-pojo-dev
+        ports:
+            - "3000:3000"
+        volumes:
+            # Mount source code for hot reloading
+            - ./src:/app/src:ro
+            - ./public:/app/public:ro
+            - ./package.json:/app/package.json:ro
+            - ./package-lock.json:/app/package-lock.json:ro
+            - ./tsconfig.json:/app/tsconfig.json:ro
+            - ./webpack.config.js:/app/webpack.config.js:ro
+            # Exclude node_modules to prevent conflicts
+            - /app/node_modules
+        environment:
+            - NODE_ENV=development
+            - CHOKIDAR_USEPOLLING=true # For file watching in Docker
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 15s
+        profiles:
+            - dev
+        labels:
+            - "com.docker.compose.service=csv-to-pojo-dev"

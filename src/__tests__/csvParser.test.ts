@@ -1,4 +1,4 @@
-import { buildOpenAPIFromCSV } from '../csvParser';
+import { buildOpenAPIFromCSVWithMapping } from '../csvParser';
 
 describe('CSV Parser', () => {
   const sampleCSV = `Field name,Type,M/O/C,Description
@@ -9,92 +9,132 @@ user.age,Number,O,User's age
 user.profile,Object,O,User profile
 user.profile.bio,String (200),O,User biography`;
 
-  describe('buildOpenAPIFromCSV', () => {
-    it('should parse CSV and generate OpenAPI spec', () => {
-      const result = buildOpenAPIFromCSV(sampleCSV);
+  const flexibleCSV = `Field name,Data type,M/O/C,Field description
+transactionId,String (25),M,Unique identification
+amount,Decimal (15,2),M,Transaction amount
+isActive,Boolean,O,Active flag`;
+
+
+  describe('buildOpenAPIFromCSVWithMapping', () => {
+    const sampleCSV = `Field name,Type,M/O/C,Description
+user.name,String (50),M,User's full name
+user.email,String (100),M,User's email address
+amount,Number,M,Transaction amount`;
+
+    const columnMapping = {
+      'Field name': 'fieldName',
+      'Type': 'type',
+      'M/O/C': 'mandatory',
+      'Description': 'description'
+    };
+
+    it('should use base model name for root class', () => {
+      const result = buildOpenAPIFromCSVWithMapping(sampleCSV, columnMapping, 'PaymentRequest');
       
-      expect(result.openapi).toBe('3.0.3');
-      expect(result.info.title).toBe('Generated API');
+      expect(result.components.schemas.PaymentRequest).toBeDefined();
+      expect(result.components.schemas.PaymentRequestUser).toBeDefined();
+      
+      // Base model should contain amount and user object
+      expect(result.components.schemas.PaymentRequest.properties.amount).toBeDefined();
+      expect(result.components.schemas.PaymentRequest.properties.user).toBeDefined();
+      expect(result.components.schemas.PaymentRequest.properties.user.$ref).toBe('#/components/schemas/PaymentRequestUser');
+    });
+
+    it('should create nested classes with base model prefix', () => {
+      const nestedCSV = `Field name,Type,M/O/C,Description
+user.profile.firstName,String,M,First name
+user.profile.address.street,String,M,Street address
+amount,Number,M,Amount`;
+
+      const result = buildOpenAPIFromCSVWithMapping(nestedCSV, columnMapping, 'DirectCreditInitiationRequest');
+      
+      const schemas = result.components.schemas;
+      expect(schemas.DirectCreditInitiationRequest).toBeDefined();
+      expect(schemas.DirectCreditInitiationRequestUser).toBeDefined();
+      expect(schemas.DirectCreditInitiationRequestUserProfile).toBeDefined();
+      expect(schemas.DirectCreditInitiationRequestUserProfileAddress).toBeDefined();
+      
+      // Check relationships
+      expect(schemas.DirectCreditInitiationRequest.properties.user.$ref).toBe('#/components/schemas/DirectCreditInitiationRequestUser');
+      expect(schemas.DirectCreditInitiationRequestUser.properties.profile.$ref).toBe('#/components/schemas/DirectCreditInitiationRequestUserProfile');
+      expect(schemas.DirectCreditInitiationRequestUserProfile.properties.address.$ref).toBe('#/components/schemas/DirectCreditInitiationRequestUserProfileAddress');
+      
+      // Final properties
+      expect(schemas.DirectCreditInitiationRequestUserProfileAddress.properties.street).toBeDefined();
+      expect(schemas.DirectCreditInitiationRequest.properties.amount).toBeDefined();
+    });
+
+    it('should handle custom column mappings', () => {
+      const customCSV = `Name,DataType,Required,Note
+user.email,String,Y,Email address
+transactionId,String,Y,Transaction ID`;
+
+      const customMapping = {
+        'Name': 'fieldName',
+        'DataType': 'type',
+        'Required': 'mandatory',
+        'Note': 'description'
+      };
+
+      const result = buildOpenAPIFromCSVWithMapping(customCSV, customMapping, 'CustomRequest');
+      
+      expect(result.components.schemas.CustomRequest).toBeDefined();
+      expect(result.components.schemas.CustomRequestUser).toBeDefined();
+      expect(result.components.schemas.CustomRequest.properties.transactionId).toBeDefined();
+      expect(result.components.schemas.CustomRequestUser.properties.email).toBeDefined();
+    });
+
+    it('should validate required mappings', () => {
+      const incompleteMapping = {
+        'Field name': 'fieldName'
+        // Missing 'type' mapping
+      };
+
+      expect(() => {
+        buildOpenAPIFromCSVWithMapping(sampleCSV, incompleteMapping, 'TestRequest');
+      }).toThrow(); // Should throw because no 'type' mapping is provided
+    });
+
+    it('should set API info based on base model name', () => {
+      const result = buildOpenAPIFromCSVWithMapping(sampleCSV, columnMapping, 'PaymentRequest');
+      
+      expect(result.info.title).toBe('PaymentRequest API');
       expect(result.info.version).toBe('1.0.0');
-      expect(result.components.schemas).toBeDefined();
     });
 
-    it('should create proper schema hierarchy', () => {
-      const result = buildOpenAPIFromCSV(sampleCSV);
-      const schemas = result.components.schemas;
-      
-      // Should have User, UserProfile schemas
-      expect(schemas.User).toBeDefined();
-      expect(schemas.UserProfile).toBeDefined();
-      
-      // User should have properties: name, email, age, profile
-      expect(schemas.User.properties.name).toBeDefined();
-      expect(schemas.User.properties.email).toBeDefined();
-      expect(schemas.User.properties.age).toBeDefined();
-      expect(schemas.User.properties.profile).toBeDefined();
-      
-      // Profile should reference UserProfile
-      expect(schemas.User.properties.profile.$ref).toBe('#/components/schemas/UserProfile');
-    });
+    it('should handle array fields with base model mapping', () => {
+      const arrayMappingCSV = `Field name,Type,M/O/C,Description
+transferList[ ],Array Object,M,List of transfers
+transferList[ ].amount,Number,M,Transfer amount
+transferList[ ].currency,String (3),M,Currency code
+metadata.tags[ ],Array String (20),O,Metadata tags`;
 
-    it('should handle required fields correctly', () => {
-      const result = buildOpenAPIFromCSV(sampleCSV);
-      const userSchema = result.components.schemas.User;
+      const result = buildOpenAPIFromCSVWithMapping(arrayMappingCSV, columnMapping, 'BulkTransfer');
       
-      expect(userSchema.required).toContain('name');
-      expect(userSchema.required).toContain('email');
-      expect(userSchema.required).not.toContain('age');
-    });
-
-    it('should convert types correctly', () => {
-      const result = buildOpenAPIFromCSV(sampleCSV);
-      const userSchema = result.components.schemas.User;
+      const baseSchema = result.components.schemas.BulkTransfer;
+      const transferSchema = result.components.schemas.BulkTransferTransfer;
+      const metadataSchema = result.components.schemas.BulkTransferMetadata;
       
-      expect(userSchema.properties.name.type).toBe('string');
-      expect(userSchema.properties.name.maxLength).toBe(50);
-      expect(userSchema.properties.age.type).toBe('number');
-    });
-
-    it('should handle custom title and version', () => {
-      const result = buildOpenAPIFromCSV(sampleCSV, 'Test API', '2.0.0');
+      // Base schema should have transferList array and metadata object
+      expect(baseSchema.properties.transferList.type).toBe('array');
+      expect(baseSchema.properties.transferList.items.$ref).toBe('#/components/schemas/BulkTransferTransfer');
+      expect(baseSchema.properties.metadata).toBeDefined();
       
-      expect(result.info.title).toBe('Test API');
-      expect(result.info.version).toBe('2.0.0');
-    });
-
-    it('should skip header and body fields', () => {
-      const csvWithHeader = `Field name,Type,M/O/C,Description
-header,Object,M,Header object
-body,Object,M,Body object
-user.name,String,M,User name`;
+      // Transfer element should have amount and currency
+      expect(transferSchema.properties.amount.type).toBe('number');
+      expect(transferSchema.properties.currency.type).toBe('string');
+      expect(transferSchema.properties.currency.maxLength).toBe(3);
       
-      const result = buildOpenAPIFromCSV(csvWithHeader);
-      const schemas = result.components.schemas;
+      // Metadata should have tags array
+      expect(metadataSchema.properties.tags.type).toBe('array');
+      expect(metadataSchema.properties.tags.items.type).toBe('string');
+      expect(metadataSchema.properties.tags.items.maxLength).toBe(20);
       
-      expect(schemas.Header).toBeUndefined();
-      expect(schemas.Body).toBeUndefined();
-      expect(schemas.User).toBeDefined();
-    });
-
-    it('should handle descriptions with HTML entities', () => {
-      const csvWithEntities = `Field name,Type,M/O/C,Description
-user.name,String,M,"User's &quot;display&quot; name"`;
-      
-      const result = buildOpenAPIFromCSV(csvWithEntities);
-      const nameProperty = result.components.schemas.User.properties.name;
-      
-      // Note: We're not actually unescaping HTML entities in our current implementation
-      expect(nameProperty.description).toBe('User\'s &quot;display&quot; name');
-    });
-  });
-
-  describe('error handling', () => {
-    it('should handle malformed CSV gracefully', () => {
-      const malformedCSV = 'Field name,Type\nuser.name'; // Missing columns
-      
-      // Papa Parse will handle this and we'll get an empty result
-      const result = buildOpenAPIFromCSV(malformedCSV);
-      expect(result.components.schemas).toEqual({});
+      // Required fields
+      expect(baseSchema.required).toContain('transferList');
+      expect(transferSchema.required).toContain('amount');
+      expect(transferSchema.required).toContain('currency');
+      expect(metadataSchema.required || []).not.toContain('tags');
     });
   });
 });
