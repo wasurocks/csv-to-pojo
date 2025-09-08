@@ -499,10 +499,24 @@ class CSVToPojoApp {
         }
     }
 
+    private jszipPromise: Promise<any> | null = null;
+
+    private async loadJSZip(): Promise<any> {
+        if (!this.jszipPromise) {
+            this.jszipPromise = new Promise((resolve, reject) => {
+                const script = document.createElement("script");
+                script.src =
+                    "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js";
+                script.onload = () => resolve((window as any).JSZip);
+                script.onerror = () => reject(new Error("Failed to load JSZip"));
+                document.head.appendChild(script);
+            });
+        }
+        return this.jszipPromise;
+    }
+
     public async downloadAllFiles(): Promise<void> {
-        // @ts-ignore Dynamic import of external JSZip library
-        const JSZip = (await import(/* webpackIgnore: true */ "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"))
-            .default as any;
+        const JSZip = await this.loadJSZip();
         const zip = new JSZip();
         for (const [filename, content] of this.state.generatedFiles.entries()) {
             zip.file(filename, content);
