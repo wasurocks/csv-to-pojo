@@ -2,7 +2,7 @@
 
 🔄 **Client-side CSV to Java POJO generator** - Convert CSV specifications into Java POJOs with validation annotations, all processed in your browser!
 
-**🌐 [Live Demo](https://wasurocks.github.io/csv-to-pojo-1/)**
+**🌐 [Live Demo](https://wasurocks.github.io/csv-to-pojo/)**
 
 ## 🚀 Features
 
@@ -44,9 +44,9 @@ docker compose --profile dev up csv-to-pojo-dev
 
 1. **Upload CSV**: Drag and drop or click to select your CSV specification file
 2. **Map Columns**: Use the column mapping interface to map your CSV columns to required fields:
-   - The system automatically detects common column patterns
-   - Manually adjust mappings using the dropdown selectors
-   - Required mappings: Field Name and Data Type
+    - The system automatically detects common column patterns
+    - Manually adjust mappings using the dropdown selectors
+    - Required mappings: Field Name and Data Type
 3. **Configure**: Set API title, version, and Java package name
 4. **Generate**: Click "Generate Java POJOs" to process
 5. **Download**: Get individual files or download all as an archive
@@ -56,20 +56,24 @@ docker compose --profile dev up csv-to-pojo-dev
 Your CSV can have any column structure! The application now features **dynamic column mapping** that allows you to map your CSV columns to the required fields:
 
 #### Required Fields (must be mapped):
+
 -   **Field Name**: Dot-notation field path (e.g., `user.profile.name`)
 -   **Data Type**: Data type with optional constraints (e.g., `String (50)`, `Number`)
 
 #### Optional Fields:
+
 -   **M/O/C**: Mandatory (M), Optional (O), or Conditional (C)
 -   **Description**: Field description for documentation
 -   **Mapping**: Additional mapping information
 
 #### Supported Column Names:
+
 The auto-mapping feature recognizes common variations:
-- Field Name: "Field name", "fieldname", "field_name", "name"
-- Data Type: "Type", "data type", "datatype", "data_type", "field type"
-- M/O/C: "m/o/c", "moc", "mandatory", "required", "optional"
-- Description: "description", "field description", "desc"
+
+-   Field Name: "Field name", "fieldname", "field_name", "name"
+-   Data Type: "Type", "data type", "datatype", "data_type", "field type"
+-   M/O/C: "m/o/c", "moc", "mandatory", "required", "optional"
+-   Description: "description", "field description", "desc"
 
 ### Example
 
