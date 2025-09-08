@@ -44,7 +44,7 @@ docker compose --profile dev up csv-to-pojo-dev
 
 1. **Upload CSV**: Drag and drop or click to select your CSV specification file
 2. **Map Columns**: Use the column mapping interface to map your CSV columns to required fields:
-    - The system automatically detects common column patterns
+    - Columns are automatically mapped using fuzzy matching
     - Manually adjust mappings using the dropdown selectors
     - Required mappings: Field Name and Data Type
 3. **Configure**: Set API title, version, and Java package name
@@ -68,7 +68,7 @@ Your CSV can have any column structure! The application now features **dynamic c
 
 #### Supported Column Names:
 
-The auto-mapping feature recognizes common variations:
+The auto-mapping feature uses fuzzy matching to recognize common variations:
 
 -   Field Name: "Field name", "fieldname", "field_name", "name"
 -   Data Type: "Type", "data type", "datatype", "data_type", "field type"
