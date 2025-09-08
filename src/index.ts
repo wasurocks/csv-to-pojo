@@ -148,6 +148,7 @@ class CSVToPojoApp {
             await this.parseCsvHeaders(csvContent);
 
             this.showColumnMappingUI();
+            this.autoMapColumns();
 
             this.elements.generateBtn.disabled = false;
             this.showStatus(
@@ -342,6 +343,49 @@ class CSVToPojoApp {
         this.renderMappingRows();
     }
 
+    // Basic string similarity based on Levenshtein distance
+    private getStringSimilarity(a: string, b: string): number {
+        const longer = a.length > b.length ? a : b;
+        const shorter = a.length > b.length ? b : a;
+        const longerLength = longer.length;
+        if (longerLength === 0) {
+            return 1.0;
+        }
+
+        const distance = this.getEditDistance(longer, shorter);
+        return (longerLength - distance) / longerLength;
+    }
+
+    private getEditDistance(a: string, b: string): number {
+        const matrix: number[][] = [];
+
+        for (let i = 0; i <= b.length; i++) {
+            matrix[i] = [i];
+        }
+        for (let j = 0; j <= a.length; j++) {
+            matrix[0][j] = j;
+        }
+
+        for (let i = 1; i <= b.length; i++) {
+            for (let j = 1; j <= a.length; j++) {
+                if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                    matrix[i][j] = matrix[i - 1][j - 1];
+                } else {
+                    matrix[i][j] = Math.min(
+                        matrix[i - 1][j - 1] + 1,
+                        matrix[i][j - 1] + 1,
+                        matrix[i - 1][j] + 1
+                    );
+                }
+            }
+        }
+
+        return matrix[b.length][a.length];
+    }
+
+    private normalizeColumnName(name: string): string {
+        return name.toLowerCase().trim().replace(/[\s_]+/g, "");
+    }
 
     private autoMapColumns(): void {
         const fieldMappings = {
@@ -356,37 +400,39 @@ class CSVToPojoApp {
                 "desc",
             ],
             mapping: ["mapping", "map", "source", "target"],
-        };
+        } as const;
 
-        // Auto-map schema fields to CSV columns
+        const threshold = 0.6; // similarity threshold
+
+        // Auto-map schema fields to CSV columns using fuzzy matching
         this.state.schemaFieldMappings.forEach((schemaMapping) => {
-            const variations = fieldMappings[schemaMapping.schemaField as keyof typeof fieldMappings];
-            if (variations) {
-                // Find the first matching CSV column
-                for (const header of this.state.csvHeaders) {
-                    const normalizedHeader = header.toLowerCase().trim();
-                    if (variations.includes(normalizedHeader)) {
-                        schemaMapping.csvColumn = header;
-                        break;
-                    }
-                }
-                
-                // If no exact match, try partial match
-                if (!schemaMapping.csvColumn) {
-                    for (const header of this.state.csvHeaders) {
-                        const normalizedHeader = header.toLowerCase().trim();
-                        const partialMatch = variations.some(
-                            (variation) =>
-                                normalizedHeader.includes(variation) ||
-                                variation.includes(normalizedHeader)
-                        );
-                        if (partialMatch) {
-                            schemaMapping.csvColumn = header;
-                            break;
-                        }
-                    }
-                }
+            const variations = fieldMappings[
+                schemaMapping.schemaField as keyof typeof fieldMappings
+            ];
+
+            if (!variations) {
+                return;
             }
+
+            let bestMatch = "";
+            let bestScore = 0;
+
+            for (const header of this.state.csvHeaders) {
+                const normalizedHeader = this.normalizeColumnName(header);
+
+                variations.forEach((variation) => {
+                    const score = this.getStringSimilarity(
+                        normalizedHeader,
+                        this.normalizeColumnName(variation)
+                    );
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMatch = header;
+                    }
+                });
+            }
+
+            schemaMapping.csvColumn = bestScore >= threshold ? bestMatch : "";
         });
 
         this.renderMappingRows();
