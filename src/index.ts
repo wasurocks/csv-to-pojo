@@ -3,7 +3,6 @@ import { generateJavaCode } from "./codeGenerator";
 import { saveAs } from "file-saver";
 import Papa from "papaparse";
 
-
 interface SchemaFieldMapping {
     schemaField: string;
     csvColumn: string;
@@ -31,7 +30,11 @@ class CSVToPojoApp {
     private readonly requiredSchemaFields = [
         { value: "fieldName", label: "Field Name", required: true },
         { value: "type", label: "Data Type", required: true },
-        { value: "mandatory", label: "M/O/C (Mandatory/Optional/Conditional)", required: false },
+        {
+            value: "mandatory",
+            label: "M/O/C (Mandatory/Optional/Conditional)",
+            required: false,
+        },
         { value: "description", label: "Description", required: false },
         { value: "sampleValue", label: "Sample Value", required: false },
     ];
@@ -184,17 +187,21 @@ class CSVToPojoApp {
             });
 
             // Validate required mappings
-            const requiredMappings = this.state.schemaFieldMappings.filter(m => m.required);
-            const missingRequired = requiredMappings.filter(m => !m.csvColumn || !m.csvColumn.trim());
-            
+            const requiredMappings = this.state.schemaFieldMappings.filter(
+                (m) => m.required
+            );
+            const missingRequired = requiredMappings.filter(
+                (m) => !m.csvColumn || !m.csvColumn.trim()
+            );
+
             if (missingRequired.length > 0) {
-                const missingLabels = missingRequired.map(m => m.label).join(', ');
+                const missingLabels = missingRequired
+                    .map((m) => m.label)
+                    .join(", ");
                 throw new Error(`Required mappings missing: ${missingLabels}`);
             }
 
             // Column mapping validation is now handled in the CSV parser
-
-            console.log("Column mapping", columnMapping);
 
             // Generate OpenAPI spec with column mappings
             const openApiSpec = buildOpenAPIFromCSVWithMapping(
@@ -258,17 +265,19 @@ class CSVToPojoApp {
 
         // Filter out empty or whitespace-only headers
         const allHeaders = parseResult.meta.fields || [];
-        this.state.csvHeaders = allHeaders.filter(header => 
-            header && header.trim().length > 0
+        this.state.csvHeaders = allHeaders.filter(
+            (header) => header && header.trim().length > 0
         );
-        
+
         // Initialize schema field mappings (user-driven approach)
-        this.state.schemaFieldMappings = this.requiredSchemaFields.map(field => ({
-            schemaField: field.value,
-            csvColumn: "", // No default selection
-            label: field.label,
-            required: field.required
-        }));
+        this.state.schemaFieldMappings = this.requiredSchemaFields.map(
+            (field) => ({
+                schemaField: field.value,
+                csvColumn: "", // No default selection
+                label: field.label,
+                required: field.required,
+            })
+        );
     }
 
     private showColumnMappingUI(): void {
@@ -304,7 +313,9 @@ class CSVToPojoApp {
         // Add "Not mapped" option
         const notMappedOption = document.createElement("option");
         notMappedOption.value = "";
-        notMappedOption.textContent = mapping.required ? "Select CSV column..." : "Not mapped";
+        notMappedOption.textContent = mapping.required
+            ? "Select CSV column..."
+            : "Not mapped";
         notMappedOption.selected = mapping.csvColumn === "";
         select.appendChild(notMappedOption);
 
@@ -336,7 +347,6 @@ class CSVToPojoApp {
 
         return row;
     }
-
 
     private updateSchemaFieldMapping(index: number, csvColumn: string): void {
         this.state.schemaFieldMappings[index].csvColumn = csvColumn;
@@ -386,7 +396,6 @@ class CSVToPojoApp {
     private normalizeColumnName(name: string): string {
         return name.toLowerCase().trim().replace(/[\s_]+/g, "");
     }
-
     private autoMapColumns(): void {
         const fieldMappings = {
             fieldName: ["field name", "fieldname", "field_name", "name"],
@@ -447,7 +456,7 @@ class CSVToPojoApp {
         this.state.schemaFieldMappings.forEach((mapping) => {
             mapping.csvColumn = "";
         });
-        
+
         this.renderMappingRows();
         this.showStatus("Column mapping reset.", "success");
     }
